@@ -1,0 +1,813 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "v1",
+    "title" : "Digital Cloudflare API",
+    "description" : "Provides menu and Contentful-driven content via Cloudflare endpoints, populated by push APIs and edge storage. Enables fast, resilient access for consumer applications without backend dependency."
+  },
+  "servers" : [ {
+    "description" : "SwaggerHub API Auto Mocking",
+    "url" : "https://virtserver.swaggerhub.com/InspireBrandsSH/digital-cf-api/v1"
+  }, {
+    "description" : "Cloudflare worker for Menu",
+    "url" : "https://menubylocation.irb.workers.dev/"
+  }, {
+    "description" : "Cloudflare edge worker for Contentful",
+    "url" : "https://aggregate-content.irb.workers.dev"
+  } ],
+  "tags" : [ {
+    "name" : "Menu",
+    "description" : "Operations with menu"
+  }, {
+    "name" : "Contentful",
+    "description" : "Contentful operations"
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Menu" ],
+        "summary" : "?location={locationId}",
+        "description" : "Retrieves menu by location ID.",
+        "operationId" : "getFullMenuByLocation",
+        "parameters" : [ {
+          "name" : "location",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          },
+          "description" : "Location ID"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully retrieved menu",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/MenuDTO"
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Invalid request parameters.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401" : {
+            "description" : "Unauthorized request.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "Survey not found.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal server error.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/content" : {
+      "post" : {
+        "tags" : [ "Contentful" ],
+        "summary" : "Pushes new content to Cloudflare Edge and purges cache",
+        "operationId" : "getContentAndPublishToCloudflareEdge",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-Session-Id"
+        }, {
+          "$ref" : "#/components/parameters/X-Device-Id"
+        }, {
+          "$ref" : "#/components/parameters/X-User-Agent"
+        }, {
+          "$ref" : "#/components/parameters/X-Version"
+        }, {
+          "$ref" : "#/components/parameters/X-Channel"
+        }, {
+          "$ref" : "#/components/parameters/X-Content-Locale"
+        }, {
+          "$ref" : "#/components/parameters/X-Refresh"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully updated Content"
+          },
+          "202" : {
+            "description" : "Request received and processing",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "code" : {
+                      "type" : "number",
+                      "example" : 202
+                    },
+                    "message" : {
+                      "type" : "string",
+                      "example" : "Accepted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing X-Channel",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No Content Types were found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Contentful fetch error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Contentful" ],
+        "summary" : "Pushes new content to Cloudflare Edge and purges cache",
+        "operationId" : "putPushContentToCloudflareEdge",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/X-Session-Id"
+        }, {
+          "$ref" : "#/components/parameters/X-Device-Id"
+        }, {
+          "$ref" : "#/components/parameters/X-User-Agent"
+        }, {
+          "$ref" : "#/components/parameters/X-Version"
+        }, {
+          "$ref" : "#/components/parameters/X-Channel"
+        }, {
+          "$ref" : "#/components/parameters/X-Content-Locale"
+        }, {
+          "$ref" : "#/components/parameters/X-Refresh"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Successfully updated Content"
+          },
+          "202" : {
+            "description" : "Request received and processing",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "properties" : {
+                    "code" : {
+                      "type" : "number",
+                      "example" : 202
+                    },
+                    "message" : {
+                      "type" : "string",
+                      "example" : "Accepted"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "description" : "Missing X-Channel",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404" : {
+            "description" : "No Content Types were found",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Contentful fetch error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "X-Session-Id" : {
+        "name" : "X-Session-Id",
+        "in" : "header",
+        "required" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "description" : "Groups all transactions/traces for ease of observability"
+      },
+      "X-Device-Id" : {
+        "name" : "X-Device-Id",
+        "in" : "header",
+        "required" : false,
+        "schema" : {
+          "type" : "string"
+        },
+        "description" : "Device identifier of the mobile application"
+      },
+      "X-Channel" : {
+        "name" : "X-Channel",
+        "in" : "header",
+        "required" : true,
+        "schema" : {
+          "type" : "string",
+          "enum" : [ "WEB", "MOBAND", "MOBIOS", "DMB", "STORE" ]
+        },
+        "description" : "Channel identifier"
+      },
+      "X-User-Agent" : {
+        "name" : "X-User-Agent",
+        "in" : "header",
+        "required" : false,
+        "schema" : {
+          "type" : "string"
+        },
+        "description" : "User agent information"
+      },
+      "X-Version" : {
+        "name" : "X-Version",
+        "in" : "header",
+        "required" : false,
+        "schema" : {
+          "type" : "string",
+          "pattern" : "^\\\\d+\\\\.\\\\d+\\\\.\\\\d+$"
+        },
+        "description" : "Version of the app/web client"
+      },
+      "X-Content-Locale" : {
+        "name" : "X-Content-Locale",
+        "in" : "header",
+        "required" : false,
+        "schema" : {
+          "type" : "string",
+          "description" : "Content Locale"
+        }
+      },
+      "X-Refresh" : {
+        "name" : "x-refresh",
+        "in" : "header",
+        "required" : false,
+        "schema" : {
+          "type" : "boolean"
+        },
+        "description" : "Bypass Cloudflare KV and call DXP directly"
+      }
+    },
+    "schemas" : {
+      "Category" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "isAvailable" : {
+            "type" : "boolean"
+          },
+          "selectionQuantity" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/CategoryQuantity"
+              }
+            }
+          },
+          "imageUrl" : {
+            "type" : "string"
+          },
+          "isRecipe" : {
+            "type" : "boolean"
+          },
+          "childRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ChildRefs"
+            }
+          }
+        }
+      },
+      "Weight" : {
+        "type" : "object",
+        "properties" : {
+          "value" : {
+            "type" : "number"
+          },
+          "unit" : {
+            "type" : "string"
+          }
+        }
+      },
+      "ChildRefs" : {
+        "type" : "object",
+        "properties" : {
+          "isAvailable" : {
+            "type" : "boolean"
+          },
+          "price" : {
+            "type" : "number"
+          },
+          "isDefault" : {
+            "type" : "boolean"
+          },
+          "quantity" : {
+            "$ref" : "#/components/schemas/Quantity"
+          }
+        }
+      },
+      "MenuDTO" : {
+        "type" : "object",
+        "properties" : {
+          "modifiers" : {
+            "$ref" : "#/components/schemas/Modifier"
+          },
+          "categories" : {
+            "$ref" : "#/components/schemas/Category"
+          },
+          "modifierGroups" : {
+            "$ref" : "#/components/schemas/ModifierGroup"
+          },
+          "rootCategoryRef" : {
+            "type" : "string"
+          },
+          "isAvailable" : {
+            "type" : "boolean"
+          },
+          "displayName" : {
+            "type" : "string"
+          },
+          "mappingLookup" : {
+            "$ref" : "#/components/schemas/MappingLookup"
+          },
+          "products" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Product"
+            }
+          },
+          "operationHours" : {
+            "$ref" : "#/components/schemas/OperationHours"
+          },
+          "productGroups" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ProductGroup"
+            }
+          }
+        }
+      },
+      "MappingLookup" : {
+        "type" : "array",
+        "items" : {
+          "$ref" : "#/components/schemas/MappingLookupIds"
+        }
+      },
+      "MappingLookupIds" : {
+        "type" : "object",
+        "properties" : {
+          "posId" : {
+            "type" : "string"
+          },
+          "menuItemId" : {
+            "type" : "string"
+          },
+          "salesItemId" : {
+            "type" : "string"
+          }
+        }
+      },
+      "Modifier" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "isAvailable" : {
+            "type" : "boolean"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "price" : {
+            "type" : "number"
+          },
+          "operationHours" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/OperationHours"
+              }
+            }
+          },
+          "ingredientRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ProductGroup"
+            }
+          },
+          "modifierGroupRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ModifierGroup"
+            }
+          },
+          "tags" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "nutrition" : {
+            "$ref" : "#/components/schemas/Nutrition"
+          },
+          "imageUrl" : {
+            "type" : "string"
+          },
+          "bannerText" : {
+            "type" : "string"
+          },
+          "isDefault" : {
+            "type" : "boolean"
+          },
+          "quantity" : {
+            "$ref" : "#/components/schemas/Quantity"
+          },
+          "relatedProducts" : {
+            "$ref" : "#/components/schemas/RelatedProducts"
+          }
+        }
+      },
+      "ModifierGroup" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "isRecipe" : {
+            "type" : "boolean"
+          },
+          "selectionQuantity" : {
+            "$ref" : "#/components/schemas/Quantity"
+          },
+          "childRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Modifier"
+            }
+          }
+        }
+      },
+      "Nutrient" : {
+        "type" : "object",
+        "properties" : {
+          "weight" : {
+            "$ref" : "#/components/schemas/Weight"
+          },
+          "dailyValuePercentage" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "Nutrition" : {
+        "type" : "object",
+        "properties" : {
+          "totalCalories" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "macroNutrients" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Nutrient"
+            }
+          }
+        }
+      },
+      "OperationHours" : {
+        "type" : "object",
+        "properties" : {
+          "start" : {
+            "type" : "string",
+            "description" : "Time without date",
+            "format" : "time",
+            "example" : "15:00:46.280934"
+          },
+          "end" : {
+            "type" : "string",
+            "description" : "Time without date",
+            "format" : "time",
+            "example" : "17:00:59.999"
+          }
+        }
+      },
+      "Product" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "isAvailable" : {
+            "type" : "boolean"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "isCombo" : {
+            "type" : "boolean"
+          },
+          "operationHours" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/OperationHours"
+              }
+            }
+          },
+          "price" : {
+            "type" : "number"
+          },
+          "tags" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "image" : {
+            "type" : "string"
+          },
+          "ingredientRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ProductGroup"
+            }
+          },
+          "relatedProducts" : {
+            "$ref" : "#/components/schemas/RelatedProducts"
+          },
+          "groupIds" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "quantity" : {
+            "$ref" : "#/components/schemas/Quantity"
+          },
+          "modifierGroupRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ModifierGroup"
+            }
+          },
+          "nutrition" : {
+            "$ref" : "#/components/schemas/Nutrition"
+          },
+          "isDefault" : {
+            "type" : "boolean"
+          },
+          "ctaLabel" : {
+            "type" : "string"
+          },
+          "isVirtual" : {
+            "type" : "boolean"
+          }
+        },
+        "title" : "Product"
+      },
+      "ProductGroup" : {
+        "type" : "object",
+        "properties" : {
+          "displayName" : {
+            "type" : "string"
+          },
+          "displayType" : {
+            "type" : "string"
+          },
+          "isRecipe" : {
+            "type" : "boolean"
+          },
+          "selectionQuantity" : {
+            "$ref" : "#/components/schemas/Quantity"
+          },
+          "childRefs" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/Product"
+            }
+          }
+        }
+      },
+      "CategoryQuantity" : {
+        "type" : "object",
+        "properties" : {
+          "min" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "max" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "free" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "default" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "Quantity" : {
+        "type" : "object",
+        "properties" : {
+          "min" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "max" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "free" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "RelatedProducts" : {
+        "type" : "object",
+        "properties" : {
+          "alternatives" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "$ref" : "#/components/schemas/ProductGroup"
+            }
+          },
+          "bundle" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "upSells" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "Error" : {
+        "type" : "object",
+        "required" : [ "errors" ],
+        "properties" : {
+          "referenceId" : {
+            "type" : "string",
+            "description" : "Error identifier",
+            "example" : "0f5737b3-bfaa-4d60-b94b-2cb4d716b06f"
+          },
+          "path" : {
+            "type" : "string",
+            "description" : "Failed resource path",
+            "example" : "/brand/BWW/some/resource/path"
+          },
+          "errorMessage" : {
+            "type" : "string",
+            "description" : "Error message",
+            "example" : "Something is wrong"
+          },
+          "errors" : {
+            "type" : "array",
+            "description" : "Response errors. Request processing errors details.",
+            "items" : {
+              "type" : "object",
+              "properties" : {
+                "code" : {
+                  "type" : "string",
+                  "description" : "Error Code returned by Service",
+                  "example" : "C10001"
+                },
+                "message" : {
+                  "type" : "string",
+                  "description" : "Error Message",
+                  "example" : "Invalid email address"
+                },
+                "source" : {
+                  "type" : "string",
+                  "description" : "Source service where the error occurred",
+                  "example" : "CustomerDomainService"
+                },
+                "brand" : {
+                  "type" : "string",
+                  "description" : "Brand ID",
+                  "example" : "ARB",
+                  "enum" : [ "ARB", "BWW", "SDI", "JJE", "RTO", "DUN", "BRO" ]
+                },
+                "reasonCode" : {
+                  "type" : "string",
+                  "description" : "Internal Reason code for the error",
+                  "example" : "CDS_INVALID_REQUEST"
+                },
+                "severity" : {
+                  "type" : "integer",
+                  "format" : "int32",
+                  "description" : "Error Severity",
+                  "example" : 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "ContentDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "description" : "Unique identifier for the content item in Contentful",
+            "example" : "contentful-12345"
+          },
+          "contentType" : {
+            "type" : "string",
+            "description" : "The type of content, such as topPicks",
+            "example" : "topPicks"
+          },
+          "fields" : {
+            "type" : "object",
+            "description" : "Sanitized content",
+            "items" : {
+              "$ref" : "#/components/schemas/ContentDto"
+            }
+          }
+        }
+      }
+    }
+  }
+}
